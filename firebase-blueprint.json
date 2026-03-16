@@ -1,0 +1,84 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A user of the SkillSwap platform.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "photoURL": { "type": "string" },
+        "bio": { "type": "string" },
+        "skillsMastered": { "type": "array", "items": { "type": "string" } },
+        "skillsWanted": { "type": "array", "items": { "type": "string" } },
+        "credits": { "type": "number", "description": "Time-Bank credits (1 hr = 1 credit)" },
+        "role": { "type": "string", "enum": ["student", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "name", "email", "credits", "role", "createdAt"]
+    },
+    "Session": {
+      "title": "Session",
+      "description": "A 1-on-1 skill exchange session.",
+      "type": "object",
+      "properties": {
+        "mentorId": { "type": "string" },
+        "learnerId": { "type": "string" },
+        "skill": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "scheduled", "completed", "cancelled"] },
+        "scheduledAt": { "type": "string", "format": "date-time" },
+        "duration": { "type": "number", "description": "Duration in hours" },
+        "proofOfWork": { "type": "string", "description": "URL or description of the project file" },
+        "review": { "type": "string" },
+        "rating": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["mentorId", "learnerId", "skill", "status", "duration", "createdAt"]
+    },
+    "SprintGroup": {
+      "title": "SprintGroup",
+      "description": "An AI-formed temporary micro-community.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "goal": { "type": "string" },
+        "members": { "type": "array", "items": { "type": "string" } },
+        "aiSummary": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "goal", "members", "createdAt"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "A message between users (includes Ghost-Teaching).",
+      "type": "object",
+      "properties": {
+        "senderId": { "type": "string" },
+        "receiverId": { "type": "string" },
+        "content": { "type": "string" },
+        "type": { "type": "string", "enum": ["text", "ghost-teaching-video"] },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["senderId", "receiverId", "content", "type", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles and time-bank ledgers."
+    },
+    "/sessions/{sessionId}": {
+      "schema": { "$ref": "#/entities/Session" },
+      "description": "Skill exchange sessions."
+    },
+    "/sprintGroups/{groupId}": {
+      "schema": { "$ref": "#/entities/SprintGroup" },
+      "description": "AI-generated study squads."
+    },
+    "/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/Message" },
+      "description": "Direct messages and ghost-teaching exchanges."
+    }
+  }
+}

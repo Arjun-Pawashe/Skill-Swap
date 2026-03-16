@@ -1,0 +1,9 @@
+{
+  "name": "SkillSwap - P2P Knowledge Exchange",
+  "description": "A peer-to-peer skill exchange platform for students featuring a time-bank ledger, AI study squads, and collaborative workspaces.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "display-capture"
+  ]
+}
