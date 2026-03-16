@@ -1,10 +1,10 @@
 {
-  "firestoreDatabaseId": "(default)",
-  "apiKey": "AIzaSyB-LerXNy-K2xpZXPRRSnIP1E0_WmbPg6M",
-  "authDomain": "skill-swap-mitaoe.firebaseapp.com",
-  "projectId": "skill-swap-mitaoe",
-  "storageBucket": "skill-swap-mitaoe.firebasestorage.app",
-  "messagingSenderId": "92935592847",
-  "appId": "1:92935592847:web:44b1d8ad7b17784b1e09fa",
+  "firestoreDatabaseId": "",
+  "apiKey": "",
+  "authDomain": "",
+  "projectId": "",
+  "storageBucket": "",
+  "messagingSenderId": "",
+  "appId": "",
   "measurementId": ""
 }
