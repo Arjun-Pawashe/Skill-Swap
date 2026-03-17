@@ -30,7 +30,7 @@ SkillSwap is a peer-to-peer learning platform designed to help students and prof
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/yourusername/skillswap.git
+    git clone https://github.com/Arjun-Pawashe/skillswap.git
     cd skillswap
     ```
 
