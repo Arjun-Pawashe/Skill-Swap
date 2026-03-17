@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../store/useStore';
 import { io, Socket } from 'socket.io-client';
-import { Mic, MicOff, Video, VideoOff, MonitorUp, PhoneOff, Sparkles, X } from 'lucide-react';
+import { Mic, MicOff, Video, VideoOff, MonitorUp, PhoneOff, Sparkles, X, Copy, Check } from 'lucide-react';
 import { GoogleGenAI } from '@google/genai';
 
 const SOCKET_URL = window.location.origin;
@@ -19,6 +19,7 @@ export default function LiveMeet() {
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [aiSolution, setAiSolution] = useState<string | null>(null);
   const [isSolving, setIsSolving] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
@@ -35,56 +36,94 @@ export default function LiveMeet() {
     setSocket(newSocket);
 
     const initMedia = async () => {
-        let stream: MediaStream | undefined;
-        try {
-          stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-          localStreamRef.current = stream;
-          if (localVideoRef.current) {
-            localVideoRef.current.srcObject = stream;
+      let stream: MediaStream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      } catch (err) {
+        console.error("Error accessing media devices.", err);
+        stream = new MediaStream();
+      }
+      
+      localStreamRef.current = stream;
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+      }
+
+      const pendingCandidates = new Map<string, RTCIceCandidateInit[]>();
+
+      const processPendingCandidates = async (userId: string, pc: RTCPeerConnection) => {
+        const candidates = pendingCandidates.get(userId);
+        if (candidates) {
+          for (const candidate of candidates) {
+            try {
+              await pc.addIceCandidate(new RTCIceCandidate(candidate));
+            } catch (e) {
+              console.error("Error adding pending ICE candidate", e);
+            }
           }
-        } catch (err) {
-          console.error("Error accessing media devices.", err);
-          // Create an empty stream if no media devices are available
-          stream = new MediaStream();
-          localStreamRef.current = stream;
+          pendingCandidates.delete(userId);
         }
+      };
 
-        newSocket.emit('join-meet', roomId);
+      newSocket.emit('join-meet', roomId);
 
-        newSocket.on('user-connected', async (userId: string) => {
-          if (!stream) return;
-          const pc = createPeerConnection(userId, newSocket, stream);
-          peerConnectionsRef.current[userId] = pc;
+      newSocket.on('user-connected', async (userId: string) => {
+        console.log('User connected:', userId);
+        const pc = createPeerConnection(userId, newSocket, stream);
+        peerConnectionsRef.current[userId] = pc;
 
+        try {
           const offer = await pc.createOffer();
           await pc.setLocalDescription(offer);
           newSocket.emit('offer', { target: userId, sdp: offer });
-        });
+        } catch (err) {
+          console.error("Error creating offer:", err);
+        }
+      });
 
-        newSocket.on('offer', async ({ callerId, sdp }) => {
-          if (!stream) return;
-          const pc = createPeerConnection(callerId, newSocket, stream);
-          peerConnectionsRef.current[callerId] = pc;
+      newSocket.on('offer', async ({ callerId, sdp }) => {
+        console.log('Received offer from:', callerId);
+        const pc = createPeerConnection(callerId, newSocket, stream);
+        peerConnectionsRef.current[callerId] = pc;
 
+        try {
           await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+          await processPendingCandidates(callerId, pc);
           const answer = await pc.createAnswer();
           await pc.setLocalDescription(answer);
           newSocket.emit('answer', { target: callerId, sdp: answer });
-        });
+        } catch (err) {
+          console.error("Error handling offer:", err);
+        }
+      });
 
-        newSocket.on('answer', async ({ callerId, sdp }) => {
-          const pc = peerConnectionsRef.current[callerId];
-          if (pc) {
+      newSocket.on('answer', async ({ callerId, sdp }) => {
+        console.log('Received answer from:', callerId);
+        const pc = peerConnectionsRef.current[callerId];
+        if (pc) {
+          try {
             await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+            await processPendingCandidates(callerId, pc);
+          } catch (err) {
+            console.error("Error handling answer:", err);
           }
-        });
+        }
+      });
 
-        newSocket.on('ice-candidate', async ({ callerId, candidate }) => {
-          const pc = peerConnectionsRef.current[callerId];
-          if (pc && candidate) {
+      newSocket.on('ice-candidate', async ({ callerId, candidate }) => {
+        const pc = peerConnectionsRef.current[callerId];
+        if (pc && pc.remoteDescription) {
+          try {
             await pc.addIceCandidate(new RTCIceCandidate(candidate));
+          } catch (err) {
+            console.error("Error adding ICE candidate:", err);
           }
-        });
+        } else {
+          const candidates = pendingCandidates.get(callerId) || [];
+          candidates.push(candidate);
+          pendingCandidates.set(callerId, candidates);
+        }
+      });
 
         newSocket.on('user-disconnected', (userId: string) => {
           if (peerConnectionsRef.current[userId]) {
@@ -114,11 +153,17 @@ export default function LiveMeet() {
   }, [roomId, user, navigate]);
 
   const createPeerConnection = (userId: string, socketInstance: Socket, stream: MediaStream) => {
+    if (peerConnectionsRef.current[userId]) {
+      peerConnectionsRef.current[userId].close();
+    }
+
     const pc = new RTCPeerConnection({
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
     });
 
-    stream.getTracks().forEach(track => pc.addTrack(track, stream));
+    stream.getTracks().forEach(track => {
+      pc.addTrack(track, stream);
+    });
 
     pc.onicecandidate = (event) => {
       if (event.candidate) {
@@ -127,10 +172,24 @@ export default function LiveMeet() {
     };
 
     pc.ontrack = (event) => {
-      setPeers(prev => ({
-        ...prev,
-        [userId]: event.streams[0]
-      }));
+      console.log('Received remote track from:', userId);
+      if (event.streams && event.streams[0]) {
+        setPeers(prev => ({
+          ...prev,
+          [userId]: event.streams[0]
+        }));
+      }
+    };
+
+    pc.onconnectionstatechange = () => {
+      console.log(`Connection state with ${userId}: ${pc.connectionState}`);
+      if (pc.connectionState === 'failed' || pc.connectionState === 'closed') {
+        setPeers(prev => {
+          const newPeers = { ...prev };
+          delete newPeers[userId];
+          return newPeers;
+        });
+      }
     };
 
     return pc;
@@ -234,7 +293,7 @@ export default function LiveMeet() {
 
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
       const response = await ai.models.generateContent({
-        model: 'gemini-3.1-pro-preview',
+        model: 'Gemini-2.5-Flash',
         contents: {
           parts: [
             { inlineData: { data: base64Image, mimeType: 'image/jpeg' } },
@@ -256,11 +315,26 @@ export default function LiveMeet() {
     navigate('/');
   };
 
+  const copyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div className="h-screen bg-stone-900 text-white flex flex-col">
       {/* Header */}
       <div className="p-4 flex items-center justify-between border-b border-stone-800">
-        <h1 className="text-xl font-bold">Live Meet: {roomId}</h1>
+        <div className="flex items-center gap-4">
+          <h1 className="text-xl font-bold">Live Meet: {roomId}</h1>
+          <button 
+            onClick={copyLink}
+            className="flex items-center gap-2 px-3 py-1.5 bg-stone-800 hover:bg-stone-700 rounded-lg text-sm transition-colors"
+          >
+            {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+            {copied ? 'Copied!' : 'Copy Link'}
+          </button>
+        </div>
         <button 
           onClick={solveProblemWithAI}
           disabled={isSolving}

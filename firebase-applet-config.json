@@ -1,8 +1,8 @@
 {
-  "firestoreDatabaseId": "",
+  "firestoreDatabaseId": "(default)",
   "apiKey": "",
   "authDomain": "",
-  "projectId": "",
+  "projectId": "-",
   "storageBucket": "",
   "messagingSenderId": "",
   "appId": "",

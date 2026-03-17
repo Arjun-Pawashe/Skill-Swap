@@ -94,27 +94,27 @@ export default function Matchmaking() {
   );
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
-      <div className="flex justify-between items-end mb-8">
+    <div className="p-4 md:p-8 max-w-6xl mx-auto">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2">Find Peers</h1>
-          <p className="text-stone-500">Exchange skills and build your knowledge equity.</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2">Find Peers</h1>
+          <p className="text-stone-500 text-sm md:text-base">Exchange skills and build your knowledge equity.</p>
         </div>
-        <div className="relative w-72">
+        <div className="relative w-full md:w-72">
           <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
           <input 
             type="text" 
             placeholder="Search skills or names..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+            className="w-full pl-10 pr-4 py-2.5 bg-white border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
           />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {filteredPeers.map(peer => (
-          <div key={peer.id} className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow">
+          <div key={peer.id} className="bg-white p-4 md:p-6 rounded-2xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow">
             <div className="flex items-center gap-4 mb-4">
               <img src={peer.photoURL || `https://ui-avatars.com/api/?name=${peer.name}`} alt={peer.name} className="w-12 h-12 rounded-full" referrerPolicy="no-referrer" />
               <div>
@@ -150,7 +150,7 @@ export default function Matchmaking() {
               </div>
             </div>
 
-            <div className="mb-6">
+            <div className="mb-2 md:mb-6">
               <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-2">Wants to Learn</p>
               <div className="flex flex-wrap gap-2">
                 {peer.skillsWanted?.map((skill: string) => (

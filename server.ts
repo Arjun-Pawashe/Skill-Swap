@@ -32,16 +32,8 @@ async function startServer() {
       console.log(`User ${socket.id} joined room ${roomId}`);
     });
 
-    socket.on('canvas-draw', (data) => {
-      socket.to(data.roomId).emit('canvas-draw', data);
-    });
-
-    socket.on('note-update', (data) => {
-      socket.to(data.roomId).emit('note-update', data);
-    });
-
-    socket.on('chat-message', (data) => {
-      socket.to(data.roomId).emit('chat-message', data);
+    socket.on('canvas-draw-stroke', (data) => {
+      socket.to(data.roomId).emit('canvas-draw-stroke', data);
     });
 
     // WebRTC Signaling for Live Meets

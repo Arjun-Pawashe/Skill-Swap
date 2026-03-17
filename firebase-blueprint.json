@@ -32,6 +32,10 @@
         "proofOfWork": { "type": "string", "description": "URL or description of the project file" },
         "review": { "type": "string" },
         "rating": { "type": "number" },
+        "isLive": { "type": "boolean", "description": "Whether the session is currently live" },
+        "whiteboardData": { "type": "string", "description": "JSON string of whiteboard lines" },
+        "notesData": { "type": "string", "description": "Collaborative notes content" },
+        "chatData": { "type": "array", "items": { "type": "object" }, "description": "Session chat history" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["mentorId", "learnerId", "skill", "status", "duration", "createdAt"]

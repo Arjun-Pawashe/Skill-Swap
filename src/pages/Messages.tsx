@@ -63,28 +63,28 @@ export default function Messages() {
   }
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
-      <h1 className="text-3xl font-bold tracking-tight mb-8">Messages & Requests</h1>
+    <div className="p-4 md:p-8 max-w-5xl mx-auto">
+      <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-6 md:mb-8">Messages & Requests</h1>
       
       <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
         {messages.length > 0 ? (
           <div className="divide-y divide-stone-200">
             {messages.map(msg => (
-              <div key={msg.id} className="p-6 flex items-start gap-4 hover:bg-stone-50 transition-colors">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${msg.type === 'ghost-teaching-video' ? 'bg-purple-100 text-purple-600' : 'bg-indigo-100 text-indigo-600'}`}>
-                  {msg.type === 'ghost-teaching-video' ? <Video className="w-5 h-5" /> : <MessageSquare className="w-5 h-5" />}
+              <div key={msg.id} className="p-4 md:p-6 flex items-start gap-3 md:gap-4 hover:bg-stone-50 transition-colors">
+                <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center shrink-0 ${msg.type === 'ghost-teaching-video' ? 'bg-purple-100 text-purple-600' : 'bg-indigo-100 text-indigo-600'}`}>
+                  {msg.type === 'ghost-teaching-video' ? <Video className="w-4 h-4 md:w-5 md:h-5" /> : <MessageSquare className="w-4 h-4 md:w-5 md:h-5" />}
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-bold text-stone-900">User {msg.senderId.substring(0, 5)}</span>
-                    <span className="text-xs text-stone-500">{new Date(msg.timestamp).toLocaleString()}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1">
+                    <span className="font-bold text-stone-900 truncate">User {msg.senderId.substring(0, 5)}</span>
+                    <span className="text-[10px] md:text-xs text-stone-500">{new Date(msg.timestamp).toLocaleString()}</span>
                     {msg.type === 'ghost-teaching-video' && (
-                      <span className="text-xs font-medium px-2 py-0.5 bg-purple-50 text-purple-700 rounded-md">
+                      <span className="text-[10px] font-medium px-2 py-0.5 bg-purple-50 text-purple-700 rounded-md">
                         Ghost-Teaching
                       </span>
                     )}
                   </div>
-                  <p className="text-stone-700 mb-4">{msg.content}</p>
+                  <p className="text-sm md:text-base text-stone-700 mb-4 break-words">{msg.content}</p>
                   
                   <div className="flex gap-2 mt-2">
                     <input 
@@ -108,9 +108,9 @@ export default function Messages() {
             ))}
           </div>
         ) : (
-          <div className="p-12 text-center text-stone-500">
-            <MessageSquare className="w-12 h-12 mx-auto mb-4 text-stone-300" />
-            <p>No messages yet.</p>
+          <div className="p-8 md:p-12 text-center text-stone-500">
+            <MessageSquare className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-4 text-stone-300" />
+            <p className="text-sm md:text-base">No messages yet.</p>
           </div>
         )}
       </div>

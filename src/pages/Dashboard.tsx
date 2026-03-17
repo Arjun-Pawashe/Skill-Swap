@@ -86,70 +86,70 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold mb-8 tracking-tight">Welcome back, {user?.displayName?.split(' ')[0] || user?.email?.split('@')[0]}</h1>
+    <div className="p-4 md:p-8 max-w-6xl mx-auto">
+      <h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8 tracking-tight">Welcome back, {user?.displayName?.split(' ')[0] || user?.email?.split('@')[0]}</h1>
       
       {/* Knowledge Equity Dashboard */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center">
-            <Clock className="w-6 h-6" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-12">
+        <div className="bg-white p-4 md:p-6 rounded-2xl border border-stone-200 shadow-sm flex items-center gap-4">
+          <div className="w-10 h-10 md:w-12 md:h-12 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center shrink-0">
+            <Clock className="w-5 h-5 md:w-6 md:h-6" />
           </div>
           <div>
-            <p className="text-sm text-stone-500 font-medium">Time-Bank Credits</p>
-            <p className="text-2xl font-bold">{stats.credits} hrs</p>
+            <p className="text-xs md:text-sm text-stone-500 font-medium">Time-Bank Credits</p>
+            <p className="text-xl md:text-2xl font-bold">{stats.credits} hrs</p>
           </div>
         </div>
         
-        <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center">
-            <Award className="w-6 h-6" />
+        <div className="bg-white p-4 md:p-6 rounded-2xl border border-stone-200 shadow-sm flex items-center gap-4">
+          <div className="w-10 h-10 md:w-12 md:h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center shrink-0">
+            <Award className="w-5 h-5 md:w-6 md:h-6" />
           </div>
           <div>
-            <p className="text-sm text-stone-500 font-medium">Sessions Taught</p>
-            <p className="text-2xl font-bold">{stats.sessionsCompleted}</p>
+            <p className="text-xs md:text-sm text-stone-500 font-medium">Sessions Taught</p>
+            <p className="text-xl md:text-2xl font-bold">{stats.sessionsCompleted}</p>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center">
-            <Star className="w-6 h-6" />
+        <div className="bg-white p-4 md:p-6 rounded-2xl border border-stone-200 shadow-sm flex items-center gap-4">
+          <div className="w-10 h-10 md:w-12 md:h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center shrink-0">
+            <Star className="w-5 h-5 md:w-6 md:h-6" />
           </div>
           <div>
-            <p className="text-sm text-stone-500 font-medium">Average Rating</p>
-            <p className="text-2xl font-bold">{stats.rating.toFixed(1)}</p>
+            <p className="text-xs md:text-sm text-stone-500 font-medium">Average Rating</p>
+            <p className="text-xl md:text-2xl font-bold">{stats.rating.toFixed(1)}</p>
           </div>
         </div>
       </div>
 
       {/* Upcoming Sessions */}
-      <h2 className="text-xl font-bold mb-4">Upcoming Sessions</h2>
+      <h2 className="text-lg md:text-xl font-bold mb-4">Upcoming Sessions</h2>
       <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
         {upcomingSessions.length > 0 ? (
           <div className="divide-y divide-stone-200">
             {upcomingSessions.map(session => (
-              <div key={session.id} className="p-6 flex items-center justify-between hover:bg-stone-50 transition-colors">
+              <div key={session.id} className="p-4 md:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-stone-50 transition-colors">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-stone-100 rounded-full flex items-center justify-center">
+                  <div className="w-10 h-10 bg-stone-100 rounded-full flex items-center justify-center shrink-0">
                     <BookOpen className="w-5 h-5 text-stone-600" />
                   </div>
                   <div>
-                    <p className="font-medium">{session.skill}</p>
-                    <p className="text-sm text-stone-500">
+                    <p className="font-medium text-sm md:text-base">{session.skill}</p>
+                    <p className="text-xs md:text-sm text-stone-500">
                       {new Date(session.scheduledAt).toLocaleString()} • {session.duration} hr
                     </p>
                   </div>
                 </div>
-                <Link to={`/workspace/${session.id}`} className="px-4 py-2 bg-stone-900 text-white rounded-lg text-sm font-medium hover:bg-stone-800 transition-colors">
+                <Link to={`/workspace/${session.id}`} className="w-full sm:w-auto text-center px-4 py-2 bg-stone-900 text-white rounded-lg text-sm font-medium hover:bg-stone-800 transition-colors">
                   Join Workspace
                 </Link>
               </div>
             ))}
           </div>
         ) : (
-          <div className="p-12 text-center text-stone-500">
-            <Calendar className="w-12 h-12 mx-auto mb-4 text-stone-300" />
-            <p>No upcoming sessions scheduled.</p>
+          <div className="p-8 md:p-12 text-center text-stone-500">
+            <Calendar className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-4 text-stone-300" />
+            <p className="text-sm md:text-base">No upcoming sessions scheduled.</p>
             <Link to="/matchmaking" className="inline-block mt-4 px-4 py-2 text-indigo-600 font-medium hover:bg-indigo-50 rounded-lg transition-colors">
               Find a Peer
             </Link>
